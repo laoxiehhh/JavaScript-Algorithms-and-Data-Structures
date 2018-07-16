@@ -141,5 +141,4 @@ export default class MinHeap {
       currentIndex = nextIndex
     }
   }
-
 }

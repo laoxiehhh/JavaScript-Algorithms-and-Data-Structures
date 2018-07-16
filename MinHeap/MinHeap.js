@@ -1,4 +1,4 @@
-import Comparator from '../util/comparator'\
+import Comparator from '../util/comparator'
 
 export default class MinHeap {
   /**

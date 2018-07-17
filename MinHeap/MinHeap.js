@@ -141,4 +141,107 @@ export default class MinHeap {
       currentIndex = nextIndex
     }
   }
+
+  /**
+   * @return {*}
+   */
+  poll () {
+    if (this.heapContainer.length === 0) {
+      return null
+    }
+
+    if (this.heapContainer.length === 1) {
+      return this.heapContainer.pop()
+    }
+
+    const item = this.heapContainer[0]
+    // Move the last element from the end to the head.
+    this.heapContainer[0] = this.heapContainer.pop()
+    this.heapifyDown()
+    return item
+  }
+
+  /**
+   * @param {*} item 
+   * @return {MinHeap}
+   */
+  add (item) {
+    this.heapContainer.push(item)
+    this.heapifyUp()
+    return this
+  }
+
+  /**
+   * @param {*} item 
+   * @param {*} customComparator 
+   * @return {Number[]}
+   */
+  find (item, customComparator) {
+    const foundItemIndices = []
+    const comparator = customComparator || this.compare
+
+    for (let itemIndex = 0; itemIndex < this.heapContainer.length; itemIndex ++) {
+      if (comparator.equal(item, this.heapContainer[itemIndex])) {
+        foundItemIndices.push(itemIndex)
+      }
+    }
+    return foundItemIndices
+  }
+
+  /**
+   * @param {*} item 
+   * @param {Comparator} customFindingComparator 
+   * @return {MinHeap}
+   */
+  remove (item, customFindingComparator) {
+    // Find number of items to move
+    const customComparator = customFindingComparator || this.compare
+    const numberOfItemsToMove = this.find(item, customComparator).length
+
+    for (let iteration = 0; iteration < numberOfItemsToMove; iteration ++) {
+      // We need to find item index to remove each time after removal since
+      // indices are being change after each heapify process
+      const indexToRemove = this.find(item, customComparator).pop()
+
+      // If we need to remove last child in the heap then just remove it
+      // There is no need to heapify the heap afterwards
+      if (indexToRemove === this.heapContainer.length - 1) {
+        this.heapContainer.pop()
+      } else {
+        // Move last element to the removed position
+        this.heapContainer[indexToRemove] = this.heapContainer.pop()
+
+        // get parent
+        const parentItem = this.hasParent(indexToRemove) ? this.parent(indexToRemove) : null
+        const leftChild = this.hasLeftChild(indexToRemove) ? this.leftChild(indexToRemove) : null
+
+        if (
+          leftChild !== null
+          && (
+            parentItem === null
+            || this.compare.lessThen(parentItem, this.heapContainer[indexToRemove])
+          )
+        ) {
+          this.heapifyDown(indexToRemove)
+        } else {
+          this.heapifyUp(indexToRemove)
+        }
+      }
+    }
+    return this
+  }
+
+  /**
+   * @return {boolean}
+   */
+  isEmpty () {
+    return !this.heapContainer.length 
+  }
+
+  /**
+   * @return {string}
+   */
+  toString () {
+    return this.heapContainer.toString()
+  }
 }
